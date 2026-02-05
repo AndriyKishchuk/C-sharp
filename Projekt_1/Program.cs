@@ -6,6 +6,6 @@ Console.WriteLine(10);
 
 Console.WriteLine("Hello people");
 Console.WriteLine(54);
-Console.WriteLine("HeLlo friends ");
+Console.WriteLine("Hello friends");
 
-
+Console.WriteLine("Good night" );
