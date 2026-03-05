@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 
-namespace Projekt_3
+namespace Projekt_3.Logs
 {
     internal class StationLog : IDisposable
     {
@@ -21,7 +21,7 @@ namespace Projekt_3
             }
         }
 
-        public void WriteLog(string message)
+        public void Write(string message)
         {
             if(LogStream == null)
             {

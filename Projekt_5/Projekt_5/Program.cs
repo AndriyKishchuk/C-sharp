@@ -15,7 +15,7 @@ class Program
 
         for (int i = 0; i < strings.Count; i++)
         {
-            if (isNotEmpty(strings[i]))
+            if (isNotEmpty(strings[i])) 
             {
                 string upperString = toUpper(strings[i]);
                 warehouse[i] = upperString;

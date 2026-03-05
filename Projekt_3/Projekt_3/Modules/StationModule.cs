@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Projekt_3
+namespace Projekt_3.Modules
 {
     abstract class StationModule
     {

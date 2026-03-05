@@ -28,7 +28,6 @@ namespace Projekt_5
                 _items[index] = value;
                 OnItemChanged?.Invoke(index, value);
             }
-
         }
     }
 }
