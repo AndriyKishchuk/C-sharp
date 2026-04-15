@@ -1,0 +1,326 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #e94560;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Форма */
+        .form-card {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+            .form-card h2 {
+                margin-bottom: 15px;
+                color: #0f3460;
+                color: #e94560;
+            }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+            .form-row input {
+                flex: 1;
+                padding: 10px;
+                border: 1px solid #0f3460;
+                border-radius: 6px;
+                background: #0f3460;
+                color: #eee;
+                min-width: 120px;
+            }
+
+                .form-row input::placeholder {
+                    color: #888;
+                }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+
+            .btn:hover {
+                opacity: 0.8;
+            }
+
+        .btn-add {
+            background: #e94560;
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        .btn-save {
+            background: #4ecca3;
+            color: #1a1a2e;
+            font-size: 12px;
+        }
+
+        .btn-delete {
+            background: #e94560;
+            color: #fff;
+            font-size: 12px;
+        }
+
+        .btn-cancel {
+            background: #888;
+            color: #fff;
+            font-size: 12px;
+        }
+
+        /* Таблиця */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #16213e;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th {
+            background: #0f3460;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #0f3460;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        td input {
+            width: 100%;
+            padding: 6px;
+            background: #0f3460;
+            border: 1px solid #e94560;
+            border-radius: 4px;
+            color: #eee;
+        }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+        }
+
+        .status {
+            text-align: center;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+
+            .status.ok {
+                display: block;
+                background: #4ecca3;
+                color: #1a1a2e;
+            }
+
+            .status.err {
+                display: block;
+                background: #e94560;
+                color: #fff;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 Order Management</h1>
+        <div id="status" class="status"></div>
+
+        <!-- Форма створення -->
+        <div class="form-card">
+            <h2>Нове замовлення</h2>
+            <div class="form-row">
+                <input type="text" id="customerName" placeholder="Ім'я клієнта" />
+                <input type="text" id="product" placeholder="Продукт" />
+                <input type="number" id="quantity" placeholder="Кількість" min="1" max="1000" />
+            </div>
+            <button class="btn btn-add" onclick="createOrder()">Додати</button>
+        </div>
+
+        <!-- Таблиця замовлень -->
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Клієнт</th>
+                    <th>Продукт</th>
+                    <th>К-сть</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody id="ordersBody">
+                <tr><td colspan="5" class="empty">Завантаження...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>const API = '/api/orders';
+        let editingId = null;
+
+        // Показати статус
+        function showStatus(message, isError = false) {
+            const el = document.getElementById('status');
+            el.textContent = message;
+            el.className = 'status ' + (isError ? 'err' : 'ok');
+            setTimeout(() => el.className = 'status', 3000);
+        }
+
+        // GET — завантажити всі замовлення
+        async function loadOrders() {
+            try {
+                const res = await fetch(API);
+                const orders = await res.json();
+                const tbody = document.getElementById('ordersBody');
+
+                if (orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty">Замовлень немає</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = orders.map(o => `
+                    <tr id="row-${o.id}">
+                        <td>${o.id}</td>
+                        <td>${editingId === o.id
+                            ? `<input id="edit-name-${o.id}" value="${o.customerName}" />`
+                            : o.customerName}</td>
+                        <td>${editingId === o.id
+                            ? `<input id="edit-product-${o.id}" value="${o.product}" />`
+                            : o.product}</td>
+                        <td>${editingId === o.id
+                            ? `<input id="edit-qty-${o.id}" type="number" value="${o.quantity}" />`
+                            : o.quantity}</td>
+                        <td class="actions">
+                            ${editingId === o.id
+                                ? `<button class="btn btn-save" onclick="saveOrder(${o.id})">💾</button>
+                                   <button class="btn btn-cancel" onclick="cancelEdit()">✖</button>`
+                                : `<button class="btn btn-save" onclick="startEdit(${o.id})">✏️</button>
+                                   <button class="btn btn-delete" onclick="deleteOrder(${o.id})">🗑️</button>`}
+                        </td>
+                    </tr>
+                `).join('');
+            } catch {
+                showStatus('Помилка завантаження', true);
+            }
+        }
+
+        // POST — створити
+        async function createOrder() {
+            const customerName = document.getElementById('customerName').value;
+            const product = document.getElementById('product').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+
+            if (!customerName || !product || !quantity) {
+                showStatus('Заповніть всі поля', true);
+                return;
+            }
+
+            const res = await fetch(API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ customerName, product, quantity })
+            });
+
+            if (res.ok) {
+                document.getElementById('customerName').value = '';
+                document.getElementById('product').value = '';
+                document.getElementById('quantity').value = '';
+                showStatus('Замовлення створено ✅');
+                loadOrders();
+            } else {
+                showStatus('Помилка створення', true);
+            }
+        }
+
+        // PUT — редагування
+        function startEdit(id) {
+            editingId = id;
+            loadOrders();
+        }
+
+        function cancelEdit() {
+            editingId = null;
+            loadOrders();
+        }
+
+        async function saveOrder(id) {
+            const customerName = document.getElementById(`edit-name-${id}`).value;
+            const product = document.getElementById(`edit-product-${id}`).value;
+            const quantity = parseInt(document.getElementById(`edit-qty-${id}`).value);
+
+            const res = await fetch(`${API}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ customerName, product, quantity })
+            });
+
+            if (res.ok) {
+                editingId = null;
+                showStatus('Замовлення оновлено ✅');
+                loadOrders();
+            } else {
+                showStatus('Помилка оновлення', true);
+            }
+        }
+
+        // DELETE — видалити
+        async function deleteOrder(id) {
+            if (!confirm('Видалити замовлення?')) return;
+
+            const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
+
+            if (res.ok) {
+                showStatus('Замовлення видалено ✅');
+                loadOrders();
+            } else {
+                showStatus('Помилка видалення', true);
+            }
+        }
+
+        // Запуск
+        loadOrders();</script>
+</body>
+</html>

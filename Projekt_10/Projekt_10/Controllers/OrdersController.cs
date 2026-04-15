@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Projekt_10.Models;
 
 namespace Projekt_10.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [AllowAnonymous]
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _orderService;
@@ -12,7 +14,7 @@ namespace Projekt_10.Controllers
         {
             _orderService = orderService;
         }
-
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetOrders()
         {

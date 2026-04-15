@@ -1,0 +1,12 @@
+2026-04-11 03:42:43 [Debug] Middleware loaded
+2026-04-11 03:42:43 [Debug] Middleware loaded. Script /_framework/aspnetcore-browser-refresh.js (16505 B).
+2026-04-11 03:42:43 [Debug] Middleware loaded. Script /_framework/blazor-hotreload.js (799 B).
+2026-04-11 03:42:43 [Debug] Middleware loaded: DOTNET_MODIFIABLE_ASSEMBLIES=debug, __ASPNETCORE_BROWSER_TOOLS=true
+2026-04-11 03:42:43 [Information] Now listening on: https://localhost:7239
+2026-04-11 03:42:43 [Information] Now listening on: http://localhost:5176
+2026-04-11 03:42:44 [Information] Application started. Press Ctrl+C to shut down.
+2026-04-11 03:42:44 [Information] Hosting environment: Development
+2026-04-11 03:42:44 [Information] Content root path: C:\Users\andri\source\repos\C#\Projekt_10\Projekt_10
+2026-04-11 03:42:44 [Debug] Response markup is scheduled to include browser refresh script injection.
+2026-04-11 03:42:44 [Debug] Response markup was updated to include browser refresh script injection.
+2026-04-11 03:42:44 [Debug] Script injected: /_framework/aspnetcore-browser-refresh.js
