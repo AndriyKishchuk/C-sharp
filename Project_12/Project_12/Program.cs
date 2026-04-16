@@ -33,6 +33,7 @@ class Program
             {
                 break;
             }
+
             do
             {
               songId = random.Next(1, playlist.Count + 1);
